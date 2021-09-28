@@ -15,6 +15,7 @@ module NwPluginMembership
           create_table_relationships
           create_workspaces
           create_resources
+          copy_templates
         end
 
         protected
@@ -176,6 +177,7 @@ module NwPluginMembership
               display_name_override: "Membership",
               nw_resources: [
                 {
+                  concern_paths: ["i_membership/i_communities_controller/managed_by_niiwin_plugin_membership.rb"],
                   nw_action_ids: Niiwin::RAILS_READ_REST_ACTION_NAMES,
                   source_id: "i_community",
                   source_type: "nw_table",
@@ -218,6 +220,15 @@ module NwPluginMembership
           ::IUsersAndPermissions::IRoleAssignments::Create.run_returning!(
             i_role_id: role.id,
             i_user_id: app_user.id,
+          )
+        end
+
+        def copy_templates
+          # Copy over template files
+          COMMUNITIES_PATH = "app/controllers/i_membership/i_communities_controller/managed_by_niiwin_plugin_membership.rb"
+          FileUtils.cp(
+            File.join("#{Gem.loaded_specs['nw_plugin_membership'].full_gem_path}/lib/templates", COMMUNITIES_PATH),
+            File.join(Rails.root, COMMUNITIES_PATH)
           )
         end
 
