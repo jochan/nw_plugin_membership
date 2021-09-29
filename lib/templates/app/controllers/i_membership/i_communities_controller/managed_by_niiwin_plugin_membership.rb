@@ -9,7 +9,7 @@ module IMembership
       end
 
       def index
-        Rails.debug.logger "Nw_plugin_membership's controller used"
+        Rails.logger.debug "Nw_plugin_membership's controller used"
 
         authorize([:i_membership, ICommunity])
         @nw_table = Niiwin::NwTable.find(:i_community)
