@@ -5,6 +5,8 @@ module NwPluginMembership
     module NwPlugins
       class FinalizeInstall < Niiwin::NwInteraction
 
+        COMMUNITIES_CONCERN_PATH = "app/controllers/i_membership/i_communities_controller/managed_by_niiwin_plugin_membership.rb"
+
         def execute
           puts "FinalizeInstall for Membership plugin"
 
@@ -225,10 +227,17 @@ module NwPluginMembership
 
         def copy_templates
           # Copy over template files
-          COMMUNITIES_PATH = "app/controllers/i_membership/i_communities_controller/managed_by_niiwin_plugin_membership.rb"
-          FileUtils.cp(
-            File.join("#{Gem.loaded_specs['nw_plugin_membership'].full_gem_path}/lib/templates", COMMUNITIES_PATH),
-            File.join(Rails.root, COMMUNITIES_PATH)
+          Inject[:file_utils].cp(
+            Inject[:file].join("#{Gem.loaded_specs['nw_plugin_membership'].full_gem_path}/lib/templates", COMMUNITIES_CONCERN_PATH),
+            Inject[:file].join(Rails.root, COMMUNITIES_CONCERN_PATH)
+          )
+
+          nw_patch_effects = Niiwin::NwPatch::INITIAL_NW_PATCH_EFFECTS
+          nw_patch_effects[:commit_files_to_git] << File.join(Rails.root, COMMUNITIES_CONCERN_PATH)
+          compose(
+            Niiwin::NwAppStructure::ApplySideEffects::CommitFilesToGit,
+            nw_patch_effects: nw_patch_effects,
+            commit_message: "Add plugin templates"
           )
         end
 
