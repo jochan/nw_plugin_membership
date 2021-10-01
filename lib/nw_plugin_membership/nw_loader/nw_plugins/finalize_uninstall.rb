@@ -15,10 +15,10 @@ module NwPluginMembership
           # - Remove selected resources, and set plugin as uninstalled
 
           # Removes every plugin-related resource (including templates, roles and permissions, workspaces, and db tables)
-          delete_templates
           remove_roles_and_permissions
           remove_workspaces
           remove_tables
+          delete_templates
         end
 
         protected
@@ -29,20 +29,6 @@ module NwPluginMembership
             form_params: params,
             nw_patch_item: nw_patch.nw_patch_items.build,
           )
-        end
-
-        def delete_templates
-          template_to_delete = Inject[:file].join(Rails.root, COMMUNITIES_CONCERN_PATH)
-          if Inject[:file].exist?(template_to_delete)
-            Inject[:file].delete(template_to_delete)
-            nw_patch_effects = Niiwin::NwPatch::INITIAL_NW_PATCH_EFFECTS
-            nw_patch_effects[:commit_files_to_git] << template_to_delete
-            compose(
-              Niiwin::NwAppStructure::ApplySideEffects::CommitFilesToGit,
-              nw_patch_effects: nw_patch_effects,
-              commit_message: "Remove plugin templates"
-            )
-          end
         end
 
         def remove_roles_and_permissions
@@ -100,6 +86,20 @@ module NwPluginMembership
           create_nw_patch_item(nw_patch, nw_patch_item_params)
 
           ::Niiwin::NwAppStructure::NwPatches::Apply.run!(id: nw_patch.id, i_user_id: @system_user.id)
+        end
+
+        def delete_templates
+          template_to_delete = Inject[:file].join(Rails.root, COMMUNITIES_CONCERN_PATH)
+          if Inject[:file].exist?(template_to_delete)
+            Inject[:file].delete(template_to_delete)
+            nw_patch_effects = Niiwin::NwPatch::INITIAL_NW_PATCH_EFFECTS
+            nw_patch_effects[:commit_files_to_git] << template_to_delete
+            compose(
+              Niiwin::NwAppStructure::ApplySideEffects::CommitFilesToGit,
+              nw_patch_effects: nw_patch_effects,
+              commit_message: "Remove plugin templates"
+            )
+          end
         end
 
       end
