@@ -1,5 +1,3 @@
-# Registers callbacks for plugin
-#
 module NwPluginMembership
   module NwLoader
     module NwPlugins
@@ -16,7 +14,7 @@ module NwPluginMembership
           create_community_membership_table
           create_table_relationships
           create_workspaces
-          create_resources
+          create_roles_and_permissions
           copy_templates
         end
 
@@ -202,10 +200,9 @@ module NwPluginMembership
           ::Niiwin::NwAppStructure::NwPatches::Apply.run!(id: nw_patch.id, i_user_id: @system_user.id)
         end
 
-        def create_resources
+        def create_roles_and_permissions
           # TODO: Clean up Niiwin IRole creation interactions
           role = ::IUsersAndPermissions::IRoles::Create.run_returning!(name: "Membership Viewer")
-          # role = IRole.find("95b8ef84-d128-41c5-ba88-21614974c158")
 
           %w[i_community i_person i_community_membership].each do |nw_resource_id|
             ::IUsersAndPermissions::IPermissions::Create.run_returning!(
