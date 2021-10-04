@@ -90,16 +90,15 @@ module NwPluginMembership
 
         def delete_templates
           template_to_delete = Inject[:file].join(Rails.root, COMMUNITIES_CONCERN_PATH)
-          if Inject[:file].exist?(template_to_delete)
-            Inject[:file].delete(template_to_delete)
-            nw_patch_effects = Niiwin::NwPatch::INITIAL_NW_PATCH_EFFECTS
-            nw_patch_effects[:commit_files_to_git] << template_to_delete
-            compose(
-              Niiwin::NwAppStructure::ApplySideEffects::CommitFilesToGit,
-              nw_patch_effects: nw_patch_effects,
-              commit_message: "Remove plugin templates"
-            )
-          end
+          Inject[:file].delete(template_to_delete) if Inject[:file].exist?(template_to_delete)
+
+          nw_patch_effects = Niiwin::NwPatch::INITIAL_NW_PATCH_EFFECTS
+          nw_patch_effects[:commit_files_to_git] << template_to_delete
+          compose(
+            Niiwin::NwAppStructure::ApplySideEffects::CommitFilesToGit,
+            nw_patch_effects: nw_patch_effects,
+            commit_message: "Remove plugin templates"
+          )
         end
 
       end
