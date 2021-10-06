@@ -229,7 +229,7 @@ module NwPluginMembership
             Inject[:file].join(Rails.root, COMMUNITIES_CONCERN_PATH)
           )
 
-          nw_patch_effects = Niiwin::NwPatch::INITIAL_NW_PATCH_EFFECTS
+          nw_patch_effects = Niiwin::NwPatch::INITIAL_NW_PATCH_EFFECTS.deep_symbolize_keys
           nw_patch_effects[:commit_files_to_git] << File.join(Rails.root, COMMUNITIES_CONCERN_PATH)
           compose(
             Niiwin::NwAppStructure::ApplySideEffects::CommitFilesToGit,
